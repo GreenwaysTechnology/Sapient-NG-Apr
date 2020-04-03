@@ -1,0 +1,284 @@
+
+Day 2:
+
+
+import { CustomerService } from './services';
+
+interface OnInit {
+    init();
+}
+
+export class CustomerComponent implements OnInit {
+    constructor(private service: CustomerService) { }
+    loader:string = 'loading .....'
+    async init() {
+        const { log } = console;
+        //this.service.findAll().forEach(i=>log(i));
+        // this.service.findAll(customers => {
+        //     console.log(customers);
+        // });
+        // this.service.findAll().then(customers => {
+        //     console.log(customers);
+        // });
+        log(this.loader)
+        const customers = await this.service.findAll();
+        log(customers);
+    }
+}
+let customerComponent = new CustomerComponent(new CustomerService());
+customerComponent.init();
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const CUSTOMERS = [{ id: 1, name: 'A1' }, { id: 1, name: 'A1' }, { id: 1, name: 'A1' }];
+class CustomerService {
+    constructor() {
+    }
+    // findAll() {
+    //     return [{ id: 1, name: 'A1' },{ id: 1, name: 'A1' },{ id: 1, name: 'A1' }]
+    // }
+    // findAll(callback) {
+    //     setTimeout(callback, 1000, CUSTOMERS);
+    // }
+    findAll() {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 5000, CUSTOMERS);
+        });
+    }
+}
+exports.CustomerService = CustomerService;
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Generics
+
+
+
+//Generics
+
+//Type errorsor
+
+// class Queue {
+//     private data = [];
+//     push = item => this.data.push(item);
+//     pop = () => this.data.shift();
+// }
+// const queue = new Queue();
+// queue.push(10.78);
+// queue.push("111.8999");
+// console.log(queue.pop().toFixed(1));
+//console.log(queue.pop().toFixed(1)); //runtime error so danager, it is bug
+
+//Add generincs
+class Queue<T> {
+    private data = [];
+    push = (item: T) => this.data.push(item);
+    pop = (): T => this.data.shift();
+}
+const numQueue = new Queue<number>();
+numQueue.push(10.78);
+console.log(numQueue.pop().toFixed(1));
+
+const messageQueue = new Queue<string>();
+for (let i = 0; i < 10; i++) {
+    messageQueue.push(`Hello ${i}`)
+}
+
+for (let i = 0; i < 10; i++) {
+    console.log(messageQueue.pop());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular :
+
+What is it?
+Angular MVC
+Angular Project components
+ -controller
+ -service
+ -directive
+ -pipes
+ -templates
+ -Routers
+ -HttpClients
+ -Observable and RXJS
+
+Component creations:
+
+Data binding patterns
+......................
+
+1.interpolation
+
+2.Type of binding
+property 
+
+Target : on which binding , can be enabled
+
+Element
+<img [src]="heroImageUrl">
+Component property
+<app-hero-detail [hero]="currentHero"></app-hero-detail>
+Directive 
+<div [ngClass]="{'special': isSpecial}"></div>
+
+3.Type of binding
+Event
+
+Target:
+Element event
+<button (click)="onSave()">Save</button>
+Component event
+<app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
+Directive event
+<div (myClick)="clicked=$event" clickable>click me</div>
+
+4.Two-way	
+Event and property	
+
+Target
+Event and property	
+<input [(ngModel)]="name">
+
+
+5.Attribute	
+Attribute (the exception)
+
+Target
+<button [attr.aria-label]="help">help</button>
+
+
+6.Class	
+class property
+
+Target
+<div [class.special]="isSpecial">Special</div>
+
+5.Style
+style property	
+<button [style.color]="isSpecial ? 'red' : 'green'">
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular Templates:
+
+Collection of html and angular instructions
+
+angular instructions : data binding Syntax
+ {{}}
+ []
+ ()
+ [()]
+ #
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Use case : plain MVC 
+
+Model : 
+ ->primitives
+ -objects
+
+View 
+
+Controller : co
+
+.................................
+
+Controller -------View and View ----->Controller
+
+
+Controller -------View
+
+1.interpolation : transfering data from controller to view
+
+
+Looping:
+<div *ngFor="let product of products">
+</div>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Property Binding: sending data from parent to child
+
+Component Driven Architecture:
+
+Application is composed of components
+
+Each compoent represents UI : How to create User Interface : html : html archtecture:
+    tree based : parent -child 
+
+
+ eg:
+
+   <div>
+      <div>
+	<div>
+	   <div>
+	
+	    </div>
+	 </div>
+	 </div>
+   </div>
+
+browser represents html as linked list -tree
+
+In js engine every element is object : dom object
+
+div -- Object
+
+
+Angular reprents component tree.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Data flows and component driven model:
+
+Face book invented a design pattern called "flux"  /Single direction data flow 
+
+
+Angular uses this model for transfering data from parent com to child comp via concept called property binding.
+
+
+property binding 
+
+Steps:
+
+1.sending data from parent to child
+
+ <app-address [propName]="propertyvalue"></app-address>
+
+ <app-address [addr]="address"></app-address>
+
+2.Receiving in child component
+
+  declare prop variable
+
+  decorate with @Input
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+property binding: []
+
+Property Binding
+Attribute Binding
+Class Binding
+Style Bindingy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

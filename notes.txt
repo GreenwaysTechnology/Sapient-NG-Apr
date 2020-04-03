@@ -905,24 +905,453 @@ class property
 Target
 <div [class.special]="isSpecial">Special</div>
 
-5.Style
+7.Style
 style property	
 <button [style.color]="isSpecial ? 'red' : 'green'">
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+property binding :  []
+
+1.component to component data passing
+
+2.Element property binding : []
+
+  <img [src]="variableName">
+
+
+<img [src]="itemImageUrl">
+<p><img src="{{itemImageUrl}}"> is the <i>interpolated</i> image.</p>
+
+<p><span>"{{interpolationTitle}}" is the <i>interpolated</i> title.</span></p>
+<p>"<span [innerHTML]="propertyTitle"></span>" is the <i>property bound</i> title.</p>
+
+<!--Attribute binding-->
+<h1>Attribute Property Binding</h1>
+<button [disabled]="isEnabled">Save</button>
+<h1>Class Binding :via ngClass Directive</h1>
+<!--Class Binding via ngClass directive-->
+<h1>Class Binding :via by adding class.special Directive</h1>
+<p [class.special]="false">binding to the classes property making this blue</p>
+<h1>Style Binding</h1>
+<!--static styles-->
+<div style="color: red">Some text</div>
+<!--dynamic style-->
+<div [style.color]="somecolor">Some text</div>
+<div [style]="mystyle">Some text</div>
+<hr>
+
+
+CSS:
+
+types of css
+1.inline style
+  <style>
+  </style>
+2.external style 
+ <link> - myapp.css
+
+Angular styles can be added
+
+1.inside project 
+
+src/styles.css :
+  ->global styles
+
+third party styles : bootstrap
+
+angular.json
+under
+"styles": [
+              "src/styles.css",
+              "node_modoules...."
+            ]
+
+2.component specific styles
+
+ Styles applied to that component only or  component and its childerens
+  styles: ['h1 { font-weight: normal; }']
+  styleUrls: ['app.component.css'],
+
+
+styles can be added in two wasy
+
+using class,style property
+
+<h1 class="layout color font">
+<h1 style="style">
+
+dynamic styles
+
+class :
+ <element [class.className]="condition">
+ <element [class]="classes">
+
+style
+ <element [style.styleName]="condition">
+ <element [style]="styleobject">
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+2.component specific styles
+
+ Styles applied to that component only or  component and its childerens
+  styles: ['h1 { font-weight: normal; }']
+  styleUrls: ['app.component.css'],
+
+
+if you apply styles through styles/styleurls, 
+
+  css will be applied only that component : css scope
+
+
+Use case : only to that component : default 
+
+Where the style tag added?
+   -head element
+  <head>
+    <style>
+        
+    </style>
+encapsulation : ViewEncapsulation.Emulated
+
+
+Use case : component + its childeren
+
+Style in the global
+<head>
+    <style>
+    </style>
+
+   encapsulation: ViewEncapsulation.None //compoent + parent
+
+Style in the component and its hierachy only:
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Event binding
+
+    <button (click)="onUpdate('employee')" >Update</button>
+  onUpdate(input) {
+    alert('On update is called' + input)
+  }
+
+two way data binding
+ <input type="text" (input) ="onChange($event)">
+    <h1>{{userInput}}</h1>
+
+ userInput: string = ";"
+  onChange(evt: any) {
+    this.userInput = evt.target.value
+  }
+
+code refactoring:
+................
+1 <input [value]="quote" (input)="quote=$event.target.value">
+
+2.event+property  [(ngModel)]
+
+ngModel : it is object, used to transfer data : dto object
+
+
+Custom Events:
+..............
+Component - Communcation 
+ 
+1.parent - child : via property
+
+2.child - parent : custom events
+
+3.inter components : services
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Modularity and DI , Services:
+.............................
+
+es 6 modularity
+angular modularity
+-object module object
+
+module object is container object
+  which contains other objects
+    -module-submodule
+    -components
+    -services
+    -pipes
+    -directies
+ etc..........
+
+how to create module object
+
+
+->Main module
+  Every angular application must have main module : app.module.ts 
+-sub module
+
+@NgModule
+
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+
+
+import { NgModule } from '@angular/core';
+
+
+@NgModule()
+export class AppModule { }
+
+
+Dependency Injection:
+1.object creation
+    ->angular creates objects via special service "injectors"
+2.mapping object relationship
+    ->angular uses concept called "Providers"/declarions/imports
+  
+  declarations: [],
+   contains view Objects 
+        - component,dirctive,pipe
+
+  imports: [],
+                         
+	submodule dependency. -@NgModule
+
+  providers: []
+
+    services ---@injectable
+
+
+3.Grab object reference
+   ->dependency object is grabbed inside an object through constructors
+
+eg;
+   Customer ----has a dependency ---- Order
+
+
+3.Grab object reference
+   ->dependency object is grabbed inside an object through constructors
+
+ class Customer{
+       constructor(private order:Order){}
+  }
 
 
 
 
 
+Flow of object creation
+  
+main.ts
+ 
+Application object creation begins
+
+   -platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+      |
+      
+       AppModule
+	  ->declarations: [AppComponent]
+			|
+			---------------------->AppComponent Object is created<---App component 										 dependency
+	      
+	 
+        -imports: [
+   		 BrowserModule,
+ 	 ]
+			|
+			----------------BrowserModule<----depencies<---depdencies
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular app architecture
+
+src/
+   app
+     - basic files
+    -domainfolder
+      greeter
+
+Note : any object if create, must be spcified in the angular di configuration.
+
+What if i create new component?
 
 
+Submodule: creation.
 
 
+scope:
+ ts : private,public,protected, module(export)
+
+ ng : angular module module:
+  
+        if any object , "which is part of submodule" : the scope is within that module only
+
+   if you access objects across the modules : in ngModule we have config prop :"exports"
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Service:
+
+Service object which contains biz logic and data .
+
+as of now , we have stored data inside controler, we have to separate out from the controller.
 
 
+types of services:
+
+1.domain specific services
+   HelloService,EmployeeSerivce,CustomoerService
+2.global services
+  Logger,Auth
+
+types of services:
+
+1.sync api
+2.async api.
+-callbacks - old
+-promises - old
+-Reactive Programming.
 
 
+Where can i inject services?
 
+-App Module : we can access service across application : single ton.
+   -global
+ providers
+-sub Module : we can access services within that submodule
+  -module
+ providers
+-component  : we can access that service only with in that component
+ -
+ providers
+
+
+Code reactoring with respect services:
+.......................................
+
+data can be loaded on to ui
+
+1.inital load
+
+	
+--->lifecycle hooks: ngOnInit----OnInit
+
+2.through user interactions : events
+
+
+exports : view objects,submodules
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+RXJS:
+....
+
+Reactive Programming :
+
+it is hybrid programming model ,Which is extending existing pl more powerfull.
+
+
+1.observer pattern
+  event driven programming
+  publisher ----subscriber
+
+2.iteratore pattern
+   how to get data from the source(data source)
+ 
+ -pull based programming
+ -push based programming
+
+
+3.functional style programming
+ 
+  ->pure functions and immuablity : the function never mutates the state(data), rather it returns
+  new /fresh data always
+
+
+ Reactive = {ob +iter+functional}
+
+How to implement reactive Modles?
+
+  X-Extension on existing languages
+
+ ReactiveX 
+
+The first Reactive Implementation from netflix : rxJava
+
+ JAVA + rEACTOVE ==> JAVA With Reactivex.
+
+after that many pl adopted extions
+
+1.js ====> RX ===rxjs :Reactive Extensions Library for JavaScript
+
+
+rxjs:
+
+write powerfull reactive programming.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Reactive Programming and angular :
+
+Angular integreated rxjs to make  "Reactive Angular Application"
+
+
+Reactive Ang:
+
+1.HTTP
+2.Routers
+etc.............
+
+Coding :
+
+Fundamentals rxjs:
+
+
+1.data source
+
+2.push data into stream
+
+Stream : as object
+
+->Observable : Stream.
+
+
+3.consumer
+
+import { Observable } from 'rxjs';
+
+
+const dataSource = 'Hello Reactive!!!!';
+
+//create Basic stream
+const stream = new Observable(subscriber => {
+    //push data into stream
+    subscriber.next(dataSource); //emit data event,then data channel is used to send data
+    subscriber.next('Hello Rxjs!')
+    // subscriber.error('heay')
+    subscriber.complete(); //emit complete event , which will trigger completed
+});
+
+//Consumer : open three channel(data,error,complete)
+
+stream.subscribe(data => console.log(data), err => console.log(err), () => console.log('done!'));
 
 
 
@@ -939,6 +1368,13 @@ style property
 
 
  
+
+
+
+
+
+
+
 
 
 

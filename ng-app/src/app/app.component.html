@@ -1,16 +1,57 @@
-<h1>{{title}}</h1>
+<div class="container">
+    <h1>{{title}}</h1>
+    <h1>Data Binding: interploation</h1>
+    <h2>Number : {{views}}</h2>
+    <h2>Boolean : {{isActive ? 'Active' : 'InActive'}}</h2>
+    <h1>Data Binding: Object</h1>
+    <h2>{{address.city}} {{address.state}}</h2>
+    <h1>Array Binding</h1>
+    <!-- for loop -->
+    <ul>
+        <li *ngFor="let skill of skills">
+            {{skill}}
+        </li>
+    </ul>
+    <h1>Component Property Binding</h1>
+    <!--Child Component : sending data from parent to child-->
+    <app-address [addrtitle]="'Address Child Component'" [addr]="address"></app-address>
+    <h1>Element Property Binding :Dynamic html properties</h1>
+    <img [src]="itemImageUrl">
+    <img src="{{itemImageUrl}}">
 
-<h1>Data Binding: interploation</h1>
-<h2>Number : {{views}}</h2>
-<h2>Boolean : {{isActive ? 'Active' : 'InActive'}}</h2>
-<h1>Data Binding: Object</h1>
-<h2>{{address.city}} {{address.state}}</h2>
-<h1>Array Binding</h1>
-<!-- for loop -->
-<ul>
-    <li *ngFor="let skill of skills">
-        {{skill}}
-    </li>
-</ul>
-<!--Child Component : sending data from parent to child-->
-<app-address [addrtitle]="'Address Child Component'"  [addr]="address"></app-address>
+    <h1>Html attribute binding</h1>
+    <!--static attribute-->
+    <!-- <button disabled>Save</button>
+<div hidden>Hidden Div</div> -->
+    <!--dynamic attribute : []-->
+    <button class="btn btn-success" [disabled]="isEnabled">Save</button>
+    <!--Styles-->
+    <!--dynamic styles :class or style : []-->
+    <h1>CSS Dynamic : class Binding</h1>
+    <p [class.special]="shouldBeSpecial">binding to the classes property making this blue</p>
+    <p [class]="classes">binding to the classes property making this blue</p>
+    <h1>CSS Dynamic : style Binding</h1>
+    <div [style.color]="somecolor">Some text</div>
+    <div [style]="mystyle">Some text</div>
+
+    <h1>Event Binding</h1>
+    <!-- <button on-click="onUpdate()" >Update</button> -->
+    <button (click)="onUpdate('employee')">Update</button>
+    <h1>User Input</h1>
+    <input type="text" (input)="onChange($event)">
+    <h1>{{userInput}}</h1>
+    <h1>User Input : text box with property binding</h1>
+    <h2>{{quote}}</h2>
+    <input [value]="quote" (input)="quote=$event.target.value">
+    <h1>User Input : text box with property binding :[()]</h1>
+    <input [(ngModel)]="quote">
+
+    <h1>Custom Events</h1>
+    <h2>Parent Component</h2>
+     <h2>Data from Child Component {{childMessage}}</h2>
+    <hr>
+    <app-child [msg]="'Stay Home'"  (sendRequest)="readMessage($event)"></app-child>
+    <hr>
+
+
+</div>
