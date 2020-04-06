@@ -1062,7 +1062,7 @@ Component - Communcation
 
 2.child - parent : custom events
 
-3.inter components : services
+3.inter components : services and rxjs
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1352,40 +1352,360 @@ const stream = new Observable(subscriber => {
 //Consumer : open three channel(data,error,complete)
 
 stream.subscribe(data => console.log(data), err => console.log(err), () => console.log('done!'));
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                        DataSource
+                                           |
+                             Stream <-----Push the data into stream from dataSource
+                               |
+                            emits event
+                   --------------------------------
+                   |           |                 |
+                 data         err             complete
+                  ||          ||                ||
+                  ||          ||                ||   --->Channel which is used to transmit data
+
+
+                           subscriber  ------>Listing for any one of the events
+
+
+Stream : It is object, In reactive Progamming stream is represented through special type(class/Object)
+ Observable
+
+if error is thrown, the stream will be closed.
+if stream is  completed, the stream will be closed.
+
+
+By default streamming is sync.
+
+How to make async streaming?
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+How to create  fresh stream?
+
+1.create stream from scratch
+    new Observable()
+
+2.crate stream using operators
+
+
+operators : methods
+
+1.creational operators
+ create stream from data source.
+
+data source could be "single value,sequence of values,array,promise,dom events,generators".
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Stream types :
+
+  Up stream
+
+  down Stream
+
+Why reactive programmig?
+  -For data processing : streaming way.
+
+eg:
+
+  list of numbers ->array
+
+Use case : i want to find out even numbers from array.
+
+ array.filter(prdicate function==>true /false)===>new filtered Array :functional programming.
+
+In reactive programming ,"Stream" is pure, if u perform any stream processing, always returns new stream
+
+
+Operators : pure function
+
+in reactive , all operators are pure function, which returns always new Observable, never mutates old state.
+
+
+Stream Processing:
+
+stream.operator1().operator2().operatorN().subscribe()
+
+rxjs stream processing syntax
+
+upstream.pipe(operator1,operator2,operator3).subscribe
+
+map,filter,tap:
+...........
 
 
 
 
+//tap : is used for logging purpose
+
+import { of } from "rxjs";
+import { tap, map, filter } from "rxjs/operators";
+
+
+//chaining pattern
+const { log } = console;
+
+//data processing
+of(1, 2, 3, 4, 5, 6, 7) //up stream
+    .pipe(
+        tap(item => log(`Emits for each value ${item}`)),
+        map(value => value * 3),  // new stream : down stream | upstream
+        filter(newItem => newItem % 2 === 0) // new stream based truthy values
+    )
+    .subscribe(log, log, () => log('done'))
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Broad casting:
+.............
+
+Producer(Stream)-----can be connected with ---one Subscriber : one to one
+  This communication style is called "unicast".
+
+Producer(Stream)----can be connected with ----->many subscribers : one to Many
+  This communication style is called "Multicast".
+
+Based on this communication style stream can be classified into two category.
+
+1.Cold Observable(Cold Stream)
+2.Hot Observable(Hot Stream)
+
+
+1.Cold Observable
+
+1.Observable that doesn’t emit items until a subscriber subscribes.
+
+2.If we have more than one subscriber, then observable will 
+emit sequence of items to all subscribers one by one.
+
+3.Each subscriber get fresh copy of the data from the begining.
+
+4.Most of Observerables are Cold.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Hot Observable:
+
+1.Observables that don’t wait for any subscription. They start emitting items   when created.
+2.They don’t emit the sequence of items again for a new subscriber.
+3.When an item is emitted by hot observable, all the subscribers that are   subscribed will get the emitted item at once.
+
+
+There are many ways to implement hot observables:
+
+1.ConnectableObservable : publish and connect
+ publish will start publishing data to multiple subscribers and as soon as connect is called
+
+2.share method
+  Can be shared a stream among subscribers  by call
+
+3.Subjects
+
+
+How to cancel subscription ? if subscribers willing to stop getting data?
+
+
+subscribe method returns "Subscription object" on which you can cancel
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Subjects:
+
+What is a Subject?  :create the hot observable from scratch
+  
+ In RxJS Subject is a special type of Observable that allows values to be multicasted 
+ to many Observers.
+
+While plain Observables are unicast (each subscribed Observer owns an independent execution of the Observable), Subjects are multicast.
+
+"each subscribed Observer owns an independent execution of the Observable"
+   =>Every Subscribers has its own independent copy of the Object.
+   lets say 10 subscribers, 10 Observable copy is maintained.
+
+ "A Subject is a special type of Observable which shares a single execution path among observers"
+
+"You can think of this as a single speaker talking at a microphone in a room full of people. Their message (the subject) is being delivered to many (multicast) people (the observers) at once. This is the basis of multicasting. Typical observables would be comparable to a 1 on 1 conversation".
+
+
+There are 4 variants of subjects:
+
+1.Subject - No initial value or replay behavior.
+
+
+2.AsyncSubject - Emits latest value to observers upon completion.
+
+3.BehaviorSubject - Requires an initial value and emits its current value (last emitted item) to new subscribers.
+
+4.ReplaySubject - Emits specified number of last emitted values (a replay) to new subscribers.
+
+
+1.AsyncSubject :
+ AsyncSubject will emit only the last value to its subscribers when source observable completes.
+
+ AsyncSubject will get all the items emitted by source observable but only emit the last item when source observable calls its "complete" method
+
+
+2.BehaviourSubject :
+ BehaviourSubject emits the most recently item at the time of subscription or 
+ a default item if none has been emitted and then continues the sequence until complete.
+
+
+  BS == Will have default value, which emitted up on subscrition.
+
+
+ReplaySubject
+    A ReplaySubject is similar to a BehaviorSubject in that it can send old values to new subscribers, but it can also record a part of the Observable execution.
+
+
+const subject = new ReplaySubject(3); // buffer 3 values for new subscribers
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular and RXJS:
+.................
+
+ng integrated rxjs , simplified lot of things : Rxfixifaction.
+
+rxfied: lot of api in angular uses rxjs libs built in.
+
+HTTPClient:
+
+Service, which is used to connect rest end points from angular.
+
+HTTPClient internally wraps rxjs : Observable.
+
+Router: 
+
+which wraps rxjs libs
+
+Event Emitter 
+
+which wraps rxjs libs
+
+Forms :reactive forms
+
+which wraps rxjs libs
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
+View ------Component--------------Services------http--------BackEnd Rest End Points
 
 
 
+import { HttpClientModule } from '@angular/common/http';
 
 
+appmodule
+imports[HttpClientModule]
+////////////////////////////////////////////////////////////////////////////////////////////////
+Objects(Services) in the HTTPClient Module
+
+HTTPClient
+  -for making http calls, get,post,delete,put.  
+  all api return type is Observable.
+
+HTTPParams:
+ To handle req and response parameters such as query params,path params...,content-type,content-length
+header values.
 
 
+HttpHeaders:
 
+to set new Header Values
+
+HTTP error handling:
+
+catchError(value=> of("error" )
+
+
+handleError<T> (serviceName = '', operation = 'operation', result = {} as T) {
+
+    return (error: HttpErrorResponse): Observable<T> => {
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      const message = (error.error instanceof ErrorEvent) ?
+        error.error.message :
+       `server returned code ${error.status} with body "${error.error}"`;
+
+      // TODO: better job of transforming error for user consumption
+      this.messageService.add(`${serviceName}: ${operation} failed: ${message}`);
+
+      // Let the app keep running by returning a safe result.
+      return of( result );
+};
+
+curry pattern
+
+class ErrorHandler{
+  function createHandleError(serviceName){
+
+	function handlerError(serviceName,operation,result){ 
+
+		return function(err){
+
+			return of(errorMessage)
+		}
+	}
+  }
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+i have two compoents ; i want to publish data which is comming from rest end point.
+
+
+comp-1
+         <----------       <--Hot--(cold)Observable---GET----HTTP
+comp-2			   (Subject/apis)
  
+i have component ; i want to display data based on some conditon: i want to show list of customers
+based on city.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+comp-1
+         <----------       Observable.pipe(filter,map,...)---GET----HTTP
+comp-2			   
  
+.............................................XXXXXXXXXXXX........................................
+
+obj---data,err,complet
+
+sub-data,err,complete
+
+how to handle error as normal data.
+
+
+response : data
+
+error--dont exception ===> response (error) {message:'error',code:500}
+
+find():Promise<any> - resolve,rject
+
+resolve(data)
+
+reject('test')
+
+async function fetch(){
+ 
+  try{ 
+  const todos= await todoService.find()
+  }
+  catch(err){
+   
+  }
+}
+
+
+
 
 
