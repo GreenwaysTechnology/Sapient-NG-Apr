@@ -1,0 +1,478 @@
+Reactive Forms:
+...............
+
+1.Reactive forms are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive formsimport { Component } from '@angular/core';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+
+<h1>Reactive Forms Application</h1>
+
+<form [formGroup]="myForm" (ngSubmit)="onSubmit(myForm)">
+  <p>Your choosen name: {{ myForm.get('name').value }}</p>
+  <input formControlName="name" placeholder="Your name">
+  <div *ngIf="myForm.get('name').hasError('required')">
+    Oops, please provide a name!
+  </div>
+  <input formControlName="email" placeholder="Your email">
+  <div *ngIf="myForm.controls.email.hasError('pattern')">
+    Oops, wrong pattern buddy!
+  </div>
+  <input formControlName="message" placeholder="Your message">
+  <div *ngIf="myForm.controls.message.errors?.minlength">
+     You need to minimum 5 characters
+  </div>
+  <button type="submit" [disabled]="myForm.invalid">
+    Send
+  </button>
+</form>
+<div>
+  {{formdata | json}}
+</div>
+<hr>
+<h1>Search Application</h1>
+<div>
+  <input type="search"
+  class="form-control"
+  placeholder="Please enter search term"
+  [formControl]="searchField"> 
+<hr/>
+<ul>
+<li *ngFor="let search of searches">{{ search }}</li>
+</ul>
+</div>
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  myForm: FormGroup;
+  formdata;
+  searchField: FormControl;
+  searches: string[] = [];
+
+
+  constructor(private fb: FormBuilder) { }
+
+  ngOnInit() {
+    // this.myForm = this.fb.group({
+    //   name: 'subramaian',
+    //   email: 'sasubramaian_md@hotmail.com',
+    //   message: 'Hello How are you!!!'
+    // });
+    this.searchField = new FormControl();
+    //Value changes
+    this.searchField.valueChanges.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+      filter(v => v !== '')
+    ).subscribe(term => {
+      console.log('Hello')
+      this.searches.push(term);
+    });
+
+    this.myForm = this.fb.group({
+      name: ['subramanian', Validators.required],
+      email: ['', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$')]],
+      message: ['', [Validators.required, Validators.minLength(5)]]
+    });
+  }
+
+  onSubmit(form: FormGroup) {
+    this.formdata = {
+      name: form.value.name,
+      email: form.value.email,
+      message: form.value.message
+    }
+    // console.log('Valid?', form.valid); // true or false
+    // console.log('Name', form.value.name);
+    // console.log('Email', form.value.email);
+    // console.log('Message', form.value.message);
+  }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+Step 1:
+<div class="container">
+  <h1>Form App</h1>
+
+  <form novalidate>
+  <fieldset>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" class="form-control">
+    </div>
+  </fieldset>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label>Language</label>
+    <select class="form-control">
+      <option value="">Please select a language</option>
+      <option *ngFor="let lang of langs"
+              [value]="lang"> 
+              {{lang}} 
+      </option>
+    </select>
+  </div>
+  </form>
+</div>
+
+export class AppComponent {
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+step 2
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({ 
+        firstName: new FormControl(), 
+        lastName: new FormControl(),
+    }),
+      email: new FormControl(),
+      password: new FormControl(),
+      language: new FormControl()
+    });
+  }
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+step 3 : app module 
+imports:
+import { ReactiveFormsModule } from '@angular/forms'
+
+imports: [
+    BrowserModule,
+    ReactiveFormsModule,
+    AppRoutingModule
+  ]
+
+Linking the Form Model to the Form Template
+
+<form [formGroup]="myform"> ... </form>
+
+<pre>{{myform.value | json}}</pre>
+
+
+<div class="container">
+  <h1>Form App</h1>
+   <h2>Form values {{myform.value | json}}}</h2>
+  <form [formGroup]="myform" novalidate>
+    <!--Nested Form group-->
+    <fieldset>
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" class="form-control">
+      </div>
+    </fieldset>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Language</label>
+      <select class="form-control">
+        <option value="">Please select a language</option>
+        <option *ngFor="let lang of langs" [value]="lang">
+          {{lang}}
+        </option>
+      </select>
+    </div>
+  </form>
+</div>
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Step 4: binding form controls with models:
+..........................................
+
+<div class="form-group">
+  <label>Email</label>
+  <input type="email"
+         class="form-control"
+         formControlName="email" (1)
+         required>
+</div>
+
+nested form groups
+<fieldset formGroupName="name"> ... </fieldset>
+
+<fieldset formGroupName="name">  (2)
+		<div class="form-group">
+			<label>First Name</label>
+			<input type="text"
+			       class="form-control"
+			       formControlName="firstName" (3)
+			       required>
+		</div>
+
+		<div class="form-group">
+			<label>Last Name</label>
+			<input type="text"
+			       class="form-control"
+			       formControlName="lastName" (3)
+			       required>
+		</div>
+	</fieldset>
+
+<div class="container">
+  <h1>Form App</h1>
+   <h2>Form values {{myform.value | json}}}</h2>
+  <form [formGroup]="myform" novalidate>
+    <!--Nested Form group-->
+    <fieldset formGroupName="name">
+      <div class="form-group">
+        <label>First Name</label>
+        <input formControlName="firstName"  type="text" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input formControlName="lastName" type="text" class="form-control">
+      </div>
+    </fieldset>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control" formControlName="email"  >
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" formControlName="password"   class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Language</label>
+      <select class="form-control" formControlName="language">
+        <option value="">Please select a language</option>
+        <option *ngFor="let lang of langs" [value]="lang">
+          {{lang}}
+        </option>
+      </select>
+    </div>
+  </form>
+</div>import { Component } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({ 
+        firstName: new FormControl(), 
+        lastName: new FormControl(),
+    }),
+      email: new FormControl(),
+      password: new FormControl(),
+      language: new FormControl()
+    });
+  }
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+Step 5: Model-Driven Form Validation
+.........................................
+
+Validators:
+
+ myform = new FormGroup({
+        name: new FormGroup({
+            firstName: new FormControl('initalvalue', Validators.required), (1)
+            lastName: new FormControl('', Validators.required),
+        }),
+        email: new FormControl('', [ (2)
+            Validators.required,
+            Validators.pattern("[^ @]*@[^ @]*") (3)
+        ]),
+        password: new FormControl('', [
+            Validators.minLength(8), (4)
+            Validators.required
+        ]),
+        language: new FormControl() (5)
+    });
+
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl('', Validators.required),
+        lastName: new FormControl('', Validators.required),
+      }),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.pattern("[^ @]*@[^ @]*")
+      ]),
+      password: new FormControl('', [
+        Validators.minLength(8),
+        Validators.required
+      ]),
+      language: new FormControl()
+    });
+  }
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Form Control States : 
+
+dirty and pristine
+
+We can get a reference to these form control instances in our template through the controls property of our myform model, for example we can print out the the dirty state of the email field like so:
+<pre>Dirty? {{ myform.controls.email.dirty }}</pre>
+
+dirty is true if the user has changed the value of the control.
+
+The opposite of dirty is pristine :
+
+This would be true if the user hasn’t changed the value, and false if the user has.
+
+Touched & Untouched:
+....................
+<pre>Touched? {{ myform.controls.email.touched }}</pre>
+<pre>UnTouched? {{ myform.controls.email.untouched }}</pre>
+
+Valid & Invalid 
+
+<pre>Valid? {{ myform.controls.email.valid }}</pre>
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+Validation Styling:
+
+Bootstrap has classes for showing visual feedback for form controls when they are invalid.
+
+For instance if we add the has-danger class to the parent div of the input control with the class of form-group it adds a red border.
+
+   <div class="form-control-feedback"
+        *ngIf="myform.controls.password.errors && (myform.controls.password.dirty || myform.controls.password.touched)">
+        <p *ngIf="myform.controls.password.errors.required">Password is required</p>
+        <p *ngIf="myform.controls.password.errors.minlength">Password must be 8 characters long, we need another
+          {{myform.controls.password.errors.minlength.requiredLength - myform.controls.password.errors.minlength.actualLength}}
+          characters </p>
+      </div>
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Submitting & Resetting
+.......................
+
+<form>
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+<form (ngSubmit)="onSubmit()">
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+onSubmit() {
+  if (this.myform.valid) {
+    console.log("Form Submitted!");
+  }
+}
+
+Reset:
+
+onSubmit() {
+  if (this.myform.valid) {
+    console.log("Form Submitted!");
+    this.myform.reset();
+  }
+}
+
+
+
+
+

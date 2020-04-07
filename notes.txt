@@ -1705,7 +1705,841 @@ async function fetch(){
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Forms:
+......
+
+Angular Forms:
+
+
+--->Forms are used to get input and send input to the compoent
+
+Forms are designed using html form elements
+ <form>
+  <input>
+  <select>
+
+how to get input
+how to validate
+  
+
+Types of forms:
+
+1.Reactive / model driven forms
+
+More robust way of designing forms.
+
+Characterics of reactive/model driven forms
+
+1.scalability
+2.resuablity
+
+Reactive forms programmetic way of designing forms.
+
+Template contains basic forms and its controls : design
+
+Component will controll the behaviour of forms  :validation,data reading and writing.
+
+Reactive form means, forms are bound with "Observable".
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Lets code;
+
+All form features which are reprsented in @angular/forms namespace
+
+->ReactiveFormsModule - reactive/model driven forms features
+
+-FormsModule -template driven forms features
+
+Steps 1: inject ReactiveFormsModule in any submodule / app module
+
+
+ReactiveFormsModule contains lot of directives
+
+Directives extends the behaviour of  existing dom elements.
+ ->Directives are custom attributes of any dom elements.
+
+1.FormGroup
+    Object which represents group.
+2.FormControl
+   Object which represents any form input elements
+
+ <input type="text"   myattr="myvalue"  formControl >
+         |             |         
+       attribute    custom attribute
+
+3.Form Model:
+  Which is object used to transfer data from the form controls to Component and component to formControls.
+
+        Form(View)    -------Model--------------- Component
+
+
+
+Step 2 : 
+
+Design basic form template
+
+<div class="container">
+  <h1>Reactive Form Application</h1>
+  <form novalidate>
+
+    <fieldset>
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" class="form-control">
+      </div>
+    </fieldset>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Language</label>
+      <select class="form-control">
+        <option value="">Please select a language</option>
+      </select>
+    </div>
+  </form>
+</div>
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Data binding with fields:
+...........................
+
+ <div class="form-group">
+      <label>Language</label>
+      <select class="form-control">
+        <option value="">Please select a language</option>
+        <option *ngFor="let lang of langs" [value]="lang">
+          {{lang}}
+        </option>
+      </select>
+    </div>
+
+
+Step 3:
+
+Binding FromGroup and Form Control instance with Form elemements.
+
+Form control binding
+
+                      directive
+		        |
+<input type="text"  [formControl]="userNameControl">
+                       |                 |
+                   FormControl Object   referenceVariable
+
+inside component
+                userNameControl = new FormControl()
+
+FormControl objects can be grouped or organized under one unit called "FormGroup"
+
+FormGroup is collection of FormControl Object
+
+<form [formGroup]="myform"> ... </form>
+         |
+      myForm = new FormGroup(
+      {
+         userNameControl: new FormControl(),
+
+      }
+
+     )
+
+A single FormGroup can have nested form groups and intern it can have its form controls and form groups
+	
+   form groups are represented by "<fieldset formGroupName="name">
+
+
+code :
+
+
+html template:
+
+<div class="container">
+  <h1>Reactive Form Application</h1>
+  <form [formGroup]="myform" novalidate>
+
+    <!--Sub Group : nested forms : nested Group-->
+    <fieldset formGroupName="name">
+      <div class="form-group">
+        <label>First Name</label>
+        <input  formControlName="firstName" type="text" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input formControlName="lastName" type="text" class="form-control">
+      </div>
+    </fieldset>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input formControlName="email"  type="email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input formControlName="password" type="password" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Language</label>
+      <select formControlName="language" class="form-control">
+        <option value="">Please select a language</option>
+        <option *ngFor="let lang of langs" [value]="lang">
+          {{lang}}
+        </option>
+      </select>
+    </div>
+  </form>
+</div>
+
+
+Component:
+
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+
+  //Data 
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+  //create FormGroup Object and FormControl Object.
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl(),
+        lastName: new FormControl(),
+      }),
+      email: new FormControl(),
+      password: new FormControl(),
+      language: new FormControl()
+    });
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+How to read forms values?
+
+  <form [formGroup]="myform" novalidate>
+
+  </form>
+
+code:
+
+ myform.value
+
+  <pre>{{myform.value | json }}</pre>
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Step 4: Default values and Validation
+......................................
+
+default values:
+
+  new FormControl()
+
+  this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl('Subramanian'),
+        lastName: new FormControl('Murugan'),
+      }),
+      email: new FormControl(''),
+      password: new FormControl(''),
+      language: new FormControl(this.langs[0])
+    });
+
+Validation:
+ validation is done at component level.
+
+Validation is done through a validation framework in angular.
+
+ name: new FormGroup({
+        firstName: new FormControl('Subramanian', Validators.required),
+        lastName: new FormControl('Murugan',Validators.required),
+      })
+
+Add more validation rules for a particular control.
+
+ array of validators
+
+ ctrlName:new FormControl('',[])
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+
+  //Data 
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+  //create FormGroup Object and FormControl Object.
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl('Subramanian', Validators.required),
+        lastName: new FormControl('Murugan', Validators.required),
+      }),
+      email: new FormControl('',
+        [
+          Validators.required,
+          Validators.pattern("[^ @]*@[^ @]*")]
+      ),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)]),
+      language: new FormControl(this.langs[0])
+    });
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Form Control States : 
+
+1.dirty
+2.pristine
+3.touched
+4.untouched
+5.valid
+6.invalid
+
+how to get theses values in template
+
+We can get a reference to these form control instances in our template through the controls property of our myform model,
+for example we can print out the the dirty state of the email field like so:
+
+<input formControlName="email" type="email" class="form-control">
+<pre>Dirty? {{ myform.controls.email.dirty }}</pre>
+
+ <p>Email States</p>
+      <pre>Dirty? {{ myform.controls.email.dirty }}</pre>
+      <pre>Pristine? {{ myform.controls.email.pristine }}</pre>
+      <pre>Touched? {{ myform.controls.email.touched }}</pre>
+      <pre>UnTouched? {{ myform.controls.email.untouched }}</pre>
+      <pre>Valid? {{ myform.controls.email.valid }}</pre>
+
+
+
+Validation Styling:
+
+Bootstrap has classes for showing visual feedback for form controls when they are invalid.
+
+For instance if we add the has-danger class to the parent div of the input control with the class of form-group it adds a red border.
+
+   <div class="form-control-feedback"
+        *ngIf="myform.controls.password.errors && (myform.controls.password.dirty || myform.controls.password.touched)">
+        <p *ngIf="myform.controls.password.errors.required">Password is required</p>
+        <p *ngIf="myform.controls.password.errors.minlength">Password must be 8 characters long, we need another
+          {{myform.controls.password.errors.minlength.requiredLength - myform.controls.password.errors.minlength.actualLength}}
+          characters </p>
+      </div>
+
+*ngIf="myform.controls.password.errors && (myform.controls.password.dirty || myform.controls.password.touched)"
+
+Submitting & Resetting
+.......................
+
+<form>
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+<form (ngSubmit)="onSubmit()">
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+onSubmit() {
+  if (this.myform.valid) {
+    console.log("Form Submitted!");
+  }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+
+  //Data 
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+  //create FormGroup Object and FormControl Object.
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl('Subramanian', Validators.required),
+        lastName: new FormControl('Murugan', Validators.required),
+      }),
+      email: new FormControl('',
+        [
+          Validators.required,
+          Validators.pattern("[^ @]*@[^ @]*")]
+      ),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)]),
+      language: new FormControl(this.langs[0])
+    });
+  }
+
+  onSubmit(){
+    if (this.myform.valid) {
+      alert("Form Submitted!");
+      console.log(this.myform.value)
+      this.myform.reset();
+    }
+  }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+How to use Observable in forms : Reactive Forms
+
+
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+
+  //Data 
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ]
+  searchField: FormControl;
+  searches: string[] = [];
+
+
+  //create FormGroup Object and FormControl Object.
+  myform: FormGroup;
+
+  ngOnInit() {
+    this.myform = new FormGroup({
+      //nested form group
+      name: new FormGroup({
+        firstName: new FormControl('Subramanian', Validators.required),
+        lastName: new FormControl('Murugan', Validators.required),
+      }),
+      email: new FormControl('',
+        [
+          Validators.required,
+          Validators.pattern("[^ @]*@[^ @]*")]
+      ),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)]),
+      language: new FormControl(this.langs[0])
+    });
+    //search Field Object
+    this.searchField = new FormControl('');
+
+    //Search Logic : get search items and add into an array
+    this.searchField.valueChanges
+      .pipe(
+        debounceTime(1000),
+        distinctUntilChanged(),
+        filter(v => v !== '')
+      ).subscribe(item => {
+        this.searches.push(item);
+      })
+
+
+  }
+
+  onSubmit() {
+    if (this.myform.valid) {
+      alert("Form Submitted!");
+      console.log(this.myform.value)
+      this.myform.reset();
+    }
+  }
+
+
+}
+
+    <div class="form-group">
+      <input type="search" class="form-control" placeholder="Please enter search term" [formControl]="searchField">
+
+      <ul>
+        <li *ngFor="let search of searches">{{ search }}</li>
+      </ul>
+
+    </div>
+
+point:
+
+ please have a look at the
+control.statusChanges -----Validation and Observables
+
+********************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&******************************************
+
+Template Driven forms:
+
+Form data binding
+Form validation
+Most of the form operations are done in the template where reative/model driven forms most of the things
+are done at component.
+
+
+Template driven forms which is from 'FormsModule'
+
+
+Templates driven forms uses model object to transfer data between view and component
+
+View<--->ngModel-uses-DomainModel<----->Component
+
+
+Steps:
+
+Step 1:
+
+FOrmsModule injection
+
+import {FormsModule } from '@angular/forms'
+
+ imports: [
+     FormsModule,
+ ]
+
+Step 2:
+
+create Domain model object
+
+
+export class PostFormModel {
+    constructor(public id: number, public title: string, public author: string) { }
+}
+
+create Object for those domain models
+
+export class AppComponent {
+  post: any;
+  constructor() {
+    this.post = new PostFormModel(Math.random(), 'Learn Angular', 'Misko')
+  }
+}
+
+
+Step 3 : 
+
+Create inital form Template
+<div class="container">
+  <h1>Post Form</h1>
+  <form>
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" class="form-control" id="title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+
+  </form>
+</div>
+
+Step 4:
+
+Data binding
+   Binding textbox(form controls) with Model Object
+   We have many ways
+  1.through instance variable,$event
+  2.through [(ngModel)]="post.title"
+   ngModel = > it is an object from "FormsModule"
+   ngModel it is dto object=>data transfering between view and component.
+
+Template  Reference Variable for form tag
+ 
+How to access dom elements?
+eg;
+<input>
+
+inside component
+  $event passed as parameter to event listener
+
+inside template
+ from one elment to another element
+ $event
+
+eg:
+<input (input)="myvar=$event.target.value">
+
+<h1>{{myvar}}</h1>
+
+#templateRef : 
+
+ <input #mybox>
+
+ <h1>{{mybox.value}}</h1>
+
+<form  #postForm> - the whole form object will be assigned to 'postformvariable'
+
+<form  #postForm="ngForm">
+
+NgForm
+.........
+<form #postForm> =>postForm points HTML Form Object
+
+ngForm is Object which inherits HTML Form
+
+class ngForm extends HTMLForm{
+  +extra behavior=>Ready made validation code
+  +form submission behviours
+}
+
+<form #postForm="ngForm">
+
+The variable postForm is now a reference to the NgForm 
+directive that governs the form as a whole.
+
+The NgForm directive:
+
+What NgForm directive? You didn't add an NgForm directive.
+
+Angular did. Angular automatically creates and attaches
+ an NgForm directive to the <form> tag.
+
+"The NgForm directive supplements the form element with additional features. 
+
+
+It holds the controls you created for the elements  with an "ngModel directive" and name attribute,
+ and monitors their properties, including their validity.
+ 
+It also has its own valid property which is true only if every contained control is valid."
+
+Note: NgForm is built Object ,has more logic for simlifying our form handling process.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ngModel:
+
+Track control state and validity with ngModel:
+.............................................
+
+ngModel:
+> Using ngModel in a form gives you more than just two-way data binding. 
+
+>It also tells you if the user touched the control, if the value changed, or if the value became invalid.
+
+State 	                        Class if true 	Class if false
+The control has been visited.  	  ng-touched 	ng-untouched
+The control's value has changed.  ng-dirty 	    ng-pristine
+The control's value is valid. 	  ng-valid 	    ng-invalid
+
+State Tracking Steps:
+
+1.Look but don't touch.
+2.Click inside the name box, then click outside it.
+3.Add slashes to the end of the name.
+4.Erase the name.
+
+ng-untouched - if you dont touch
+ng-touched - if you touch
+ng-dirty - if you changed
+ng-invalid - if you remove all-empty field.
+
+
+Add custom CSS for visual feedback:
+
+Valid + Required - green Color
+Valid + optional - white color
+Invalid (required | optional) - red Color
+
+Angular Css:
+.ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
+
+7.Add name attribute for each form control
+
+  <input name="title">
+
+
+8.8.Validation Block
+
+ <input [(ngModel)]="post.author" name="author" type="text" #errMsg1="ngModel" class="form-control" id="author" required>
+
+
+    <div [hidden]="errMsg1.valid || errMsg1.pristine" class="alert alert-danger">
+          Author is required
+    </div>
+
+   
+9.9.Submitting a form
+  We need to add ngSubmit event on form element
+
+  <form (ngSubmit)="onSubmit()">
 
 
 
 
+import { Component } from '@angular/core';
+import { PostFormModel } from './forms/PostModel';
+import { PostService } from './post.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  post: any;
+  submitted: boolean = false;
+
+  constructor(private service: PostService) {
+    this.post = new PostFormModel(Math.random(), 'Learn Angular', 'Misko')
+  }
+
+
+  onSubmit() {
+    this.submitted = true;
+    this.service.save(this.post);
+  }
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+<div [hidden]="submitted">
+  <div class="container">
+    <h1>Post Form</h1>
+    <form (ngSubmit)="onSubmit()" #postForm="ngForm">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input [(ngModel)]="post.title" name="title" type="text" #errMsg="ngModel" class="form-control" id="title"
+          required>
+        <div [hidden]="errMsg.valid || errMsg.pristine" class="alert alert-danger">
+          Title is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="author">Author</label>
+        <input [(ngModel)]="post.author" name="author" type="text" #errMsg1="ngModel" class="form-control" id="author"
+          required>
+        <div [hidden]="errMsg1.valid || errMsg1.pristine" class="alert alert-danger">
+          Author is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select class="form-control" id="category" name="category" 
+        required [(ngModel)]="post.category">
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{cat}}
+          </option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!postForm.form.valid">Submit</button>
+
+    </form>
+  </div>
+</div>
+
+<div class="container" [hidden]="!submitted">
+  <h2>You submitted the following:</h2>
+  <div class="row">
+    <div class="col-xs-3">Id : </div>
+    <div class="col-xs-9  pull-left">{{ post.id }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-3">Title : </div>
+    <div class="col-xs-9  pull-left">{{ post.title }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-3">Author : </div>
+    <div class="col-xs-9 pull-left">{{ post.author }}</div>
+  </div>
+  <br>
+  <button class="btn btn-primary" (click)="submitted=false">GoBack</button>
+</div>
+/////////////////////////////////////////////////////////
+
+    <input>  ------------ new FormControl
+ 
+    <form group>
+        <input formctlnme=xx>            new FormGroup({
+				          xx:new FormControl
+			                })
