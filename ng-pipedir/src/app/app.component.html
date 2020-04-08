@@ -1,0 +1,64 @@
+<h1>Directives : Structural Directives</h1>
+
+<h1>*ngFor</h1>
+<ul>
+  <li *ngFor="let name of names ">
+    <p>{{name}}</p>
+  </li>
+</ul>
+<h1>*ngIf</h1>
+<button (click)="toggle()">Toggle</button>
+<div *ngIf="!isHidden">
+  <h1>Hello</h1>
+</div>
+<div [hidden]="isHidden">
+  <h1>Hai</h1>
+</div>
+<!--if ..else -->
+<!--display this div in case true-->
+<div *ngIf="isEnabled; else notShown  ">
+  <h2>Enabled</h2>
+</div>
+<!--display this div in case false-->
+<ng-template #notShown>
+  <div>
+    <h2>Disabled</h2>
+  </div>
+</ng-template>
+
+<h2>
+  <div *ngIf="loading; else notLoading  ">
+    <h2>{{status}}</h2>
+  </div>
+</h2>
+<ng-template #notLoading>
+  <div>
+    <h2>{{status}}</h2>
+  </div>
+</ng-template>
+<h1>Switch case</h1>
+<div [ngSwitch]="feedback">
+  <p *ngSwitchCase="'good'">Good</p>
+  <p *ngSwitchCase="'verygood'">Very Good</p>
+  <p *ngSwitchCase="'bad'">Bad</p>
+  <p *ngSwitchDefault>Your input is not matching</p>
+
+</div>
+
+<div [ngSwitch]="feedback">
+  <ng-template [ngSwitchCase]="'good'">
+    <h3>Good</h3>
+  </ng-template>
+  <ng-template [ngSwitchCase]="'verygood'">
+    <h3>Very Good</h3>
+  </ng-template>
+  <ng-template [ngSwitchCase]="'bad'">
+    <h3>bad</h3>
+  </ng-template>
+  <ng-template ngSwitchDefault>
+    <h3>Your input is not matching</h3>
+  </ng-template>
+</div>
+<hr>
+<h1>Attribute Directive:Custom Directive</h1>
+ <h3 appHighlight [highlightColor]="color">Hello</h3>

@@ -2543,3 +2543,876 @@ export class AppComponent {
         <input formctlnme=xx>            new FormGroup({
 				          xx:new FormControl
 			                })
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Pipes
+
+Directives
+
+Unit Testing
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Ng Objects
+
+1.Component
+2.Module
+3.Service
+4.Pipe
+5.Directive
+
+Pipe: 
+
+It is one of the view object, used for data formating.
+
+Ng uses declarative programming.
+
+Data Formating:
+.............
+
+1.Date 
+i want to display date in different formats
+  dd/mm/yy
+  mm/yy/dd 
+  h/sec/ms
+
+pipes are used inside interplation expression
+
+  {{ variable/data | nameofthepipe }}
+
+
+Angular provides lot of built in pipes, and mean time, we can create our own pipes : custom pipes.
+
+<h2>Today {{ today | date }}</h2>
+
+
+Parameterizing Pipe: input
+...........................
+
+Pipes can take formate input, for eg , i want to display dd/mm/yyyy
+
+
+  {{ variable/data | nameofthepipe:input }}
+
+<h1>Date Pipe</h1>
+<h2>Today {{ today | date }}</h2>
+<h2>Today {{ today | date:'dd/MM/yyyy' }}</h2>
+<h2>Today {{ today | date:'shortTime' }}</h2>
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+Currency Pipe:
+..............
+
+export class AppComponent {
+  today = new Date()
+  //currency values
+  stockPrice = 100000.7834;
+}
+
+<h2>Stock value {{stockPrice |currency}}</h2>
+<h2>Stock value {{stockPrice | currency:'INR'}}</h2>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+JSON Pipe:
+..........
+ To convert js object into json
+
+<h1>Object : JSON</h1>
+<pre>
+   {{formValues | json}}
+</pre>
+
+Percentage Pipe:
+...............
+<h2>
+  Average Price {{avgPrice | percent}}
+</h2>
+  avgPriceFr = 1.34568;
+
+///////////////////////////////////////////////////////////////////
+
+String /charater related pipes:
+
+1.uppercase
+2.titlecase
+3.lowercase
+
+
+<h2>
+  first Name : uppercase {{firstName | uppercase }}
+  first Name : lowercase {{firstName | lowercase }}
+  first Name : titlecase {{firstName | titlecase }}
+
+</h2>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Async pipe :
+
+To bind observables directly into template
+
+<h1>Observable pipes</h1>
+<h2>Stream Message {{stream | async}}</h2>
+<ul>
+  <li *ngFor="let num of datasource">
+    {{num}}
+  </li>
+</ul>
+<h2>For loop with async pipe</h2>
+<ul>
+  <li *ngFor="let num of list | async">
+    {{num}}
+  </li>
+</ul>
+
+<h2>Todos with async pipe</h2>
+<ul>
+  <li *ngFor="let todo of todos | async">
+    <pre>{{todo | json}}</pre>
+  </li>
+</ul>
+
+Component:
+import { Component } from '@angular/core';
+import { of } from 'rxjs';
+import { ToDoService } from './todo.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+  todos: any;
+  constructor(private todoService: ToDoService) { }
+  today = new Date()
+  //currency values
+  stockPrice = 100000.7834;
+  //object
+  formValues = {
+    name: 'subramanian',
+    email: 'foo@mydomain.com',
+    city: 'Coimbatore',
+    state: 'Tamil Nadu'
+  }
+  //percentage
+  avgPrice = 0.34568;
+  avgPriceFr = 1.34568;
+
+  firstName = "subramanian"
+
+  stream = of('Hello I am Observable')
+
+  datasource: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  list = of(this.datasource);
+
+  ngOnInit() {
+    this.todos = this.todoService.findAll()
+  }
+
+
+}
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ToDoService {
+    constructor(private http: HttpClient) { }
+
+    findAll() {
+        const url = 'https://jsonplaceholder.typicode.com/todos'
+        return this.http.get(url);
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Custom Pipes:
+
+
+what if i want more data formating logic, then you can create custom pipes.
+
+Pipes are objects  
+
+we need to declare class and decorate @Pipe
+
+Use case 1 : Decimal fractions
+
+
+Step 1 :
+
+declare class
+
+@Pipe({ name: 'decimalFraction' })
+export class DecimalFractionPipe implements PipeTransform {
+      transform(value: any, ...args: any[]) {
+            console.log('decimal pipe is working...');
+      }
+}
+
+import { Pipe, PipeTransform } from '@angular/core';
+
+
+@Pipe({ name: 'decimalFraction' })
+export class DecimalFractionPipe implements PipeTransform {
+
+    /**
+     *  {{ value | nameofthPipe }}
+     * First arg is value
+     * second arg is collection of args : var args
+     *  
+     * */
+    // transform(value: any, ...args: any[]) {
+    //     console.log(`Value ${value}`)
+    //     console.log(`args ${args}`)
+    //     //logic
+    // }
+    transform(value: number, input: number = 2) {
+        let formateInput: number = input;
+        //logic
+        return value.toFixed(formateInput);
+    }
+}
+<h1>Custom Pipes : decimal fraction With Chanining</h1>
+<h2>Decimal Fraction {{ goldPrice | decimalFraction | currency }}</h2>
+<h2>Decimal Fraction {{ goldPrice | decimalFraction:3 | currency:'INR'}}</h2>
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Directives:
+.........
+
+Directive is nothing but  custom tag or custom attribute in html 5
+
+
+<app-root>,app-customer : custom tag
+
+<div id="test" *ngFor formcontrolName="test"> : custom attributes
+
+Angular provides lot of custom tags and attributes we call "Directives"
+
+We can classfiy the directives(element/attribute):
+
+1.Component
+  directives with a template
+  custom element creations.
+
+ Every Component is Directive.
+
+Points :
+
+ Component class inherits Directive class
+
+
+  class Component extends Directive{}
+
+ @Component inherits @Directive
+
+2.Structural
+
+  It is one of the "special attribute" directive
+  All structural directive starts with "*" notation.
+
+Why structural directive?
+->change the DOM Layout by adding and removing dom elements : Dom manulation.
+
+Common structural directives
+1.*ngFor : for loop
+2.*ngIf  : if condition
+3.*ngSwitch : switch
+
+
+
+2.*ngIf  : if condition
+ 
+if you are implementing toggling .
+
+ add or remove dom element dynamically.
+
+Caution : dont add or remove elements dynamically which degrades performances.
+
+inside of that use "hidden" attribute
+
+...............................................................................
+if...else block
+
+ng-template:
+angular element for rendering html elements
+
+ng-container : please have look at
+
+key : value
+
+ *ngFor="let var of array"
+  var = >binding
+   [var] = key
+   <ng-template *ngIf="var">
+
+    </li> 
+
+3.Attribute
+
+it is one of the directive which addes extra behaviour to dom element
+<div beh>
+
+Why attribute directives?
+
+1.For javascript way of dom programming.
+
+There are plent of built-in attribute directives?
+ 
+<a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" fragment="education">
+  link to user component
+</a>
+
+Custom Attribute directives:
+...........................
+
+import { Directive, ElementRef, HostListener, Host, Input } from '@angular/core';
+
+
+@Directive({
+    selector: '[appHighlight]'
+})
+export class HighLightDirective {
+
+    @Input()
+    highlightColor: string;
+
+    constructor(private el: ElementRef) { }
+
+    ngOnInit() {
+        console.log(this.highlightColor)
+        this.highlight(this.highlightColor) // inital color
+    }
+    //native events : javascript events
+    @HostListener('mouseenter')
+    onMouseEnter() {
+        this.highlight('pink')
+
+    }
+    @HostListener('mouseleave')
+    onMouseLeave() {
+        this.highlight(null)
+
+    }
+    private highlight(color: string) {
+        this.el.nativeElement.style.backgroundColor = color;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Unit Testing;
+............
+
+Jasmine
+   Assertion framework and also which provides runtime
+
+describe
+it
+expect
+
+Karama
+  It is testing runtime
+
+TestBed
+The Angular Test Bed (ATB) is a higher level Angular Only testing framework 
+that allows us to easily test behaviours that depend on the Angular Framework.
+
+
+Angular Unit Testing == {jasmine + TestBed + Karama}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Service Testing:
+...............
+
+
+//Service
+
+//domain class to be tested
+export class AuthService {
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
+  }
+}
+
+describe('Service: Auth', () => {
+  let service: AuthService;
+  beforeEach(() => {
+    console.log('before each');
+    service = new AuthService();
+  });
+
+  afterEach(() => {
+    service = null;
+    localStorage.removeItem('token');
+  });
+
+  it('should return true from isAuthenticated when there is a token', () => {
+    localStorage.setItem('token', '1234'); //test dataf
+    expect(service.isAuthenticated()).toBeTruthy(); //assert whether logic is correct or not
+  });
+  it('should return false from isAuthenticated when there is no token', () => {
+    expect(service.isAuthenticated()).toBeFalsy();
+  });
+
+
+});
+
+
+Pipe Testing:
+
+//Pipe
+
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'default'
+})
+export class DefaultPipe implements PipeTransform {
+
+  transform(value: string, fallback: string, forceHttps: boolean = false): string {
+    let image = '';
+    if (value) {
+      image = value;
+    } else {
+      image = fallback;
+    }
+    if (forceHttps) {
+      if (image.indexOf('https') === -1) {
+        image = image.replace('http', 'https');
+      }
+    }
+    return image;
+  }
+
+}
+
+describe('Pipe: Default', () => {
+  let pipe: DefaultPipe;
+
+  beforeEach(() => {
+    pipe = new DefaultPipe();
+  });
+  it('providing no value returns fallback', () => {
+    expect(pipe.transform('', 'http://place-hold.it/300')).toBe('http://place-hold.it/300');
+  });
+
+  it('providing a value returns value', () => {
+    expect(pipe.transform('http://place-hold.it/300', 'fallback')).toBe('http://place-hold.it/300');
+  });
+
+  it('asking for https returns https', () => {
+    expect(pipe.transform('', 'http://place-hold.it/300', true)).toBe('https://place-hold.it/300');
+  });
+});
+
+
+we are going to discuss how to test classes which have dependencies in isolation by using Mocks.
+
+• How to Mock with fake classes.
+• How to Mock by extending classes and overriding functions.
+• How to Mock by using a real instance and a Spy.
+
+Login Component without dependency with AuthService:
+
+import { Component } from '@angular/core';
+
+export class AuthService {
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
+  }
+}
+
+@Component({
+  selector: 'app-login',
+  template: `<a [hidden]="needsLogin()">Login</a>`
+})
+export class LoginComponent {
+
+  constructor(private auth: AuthService) {
+  }
+
+  //Test this api.
+  needsLogin() {
+    return this.auth.isAuthenticated();
+  }
+}
+//////////////////////////////////////////////////////////////////////////////
+
+//with out fake classes
+
+describe('Component: Login', () => {
+
+  let component: LoginComponent;
+  let service: AuthService;
+
+  beforeEach(() => {
+    service = new AuthService();
+    component = new LoginComponent(service);
+  });
+
+  afterEach(() => {
+    service = null;
+    component = null;
+    localStorage.removeItem('token');
+  });
+
+
+  it('canLogin returns true when the user is  authenticated', () => {
+   localStorage.setItem('token', '1234');
+    expect(component.needsLogin()).toBeTruthy();
+  });
+  it('canLogin returns false when the user is not authenticated', () => {
+    expect(component.needsLogin()).toBeFalsy();
+  });
+
+});
+
+Problems in the Above code:
+
+So in order to test LoginComponent we would need to know the inner workings of AuthService.
+
+That’s not very isolated but also not too much to ask for in this scenario. However imagine if
+LoginComponent required a number of other dependencies in order to run, we would need to know
+the inner workings of a number of other classes just to test our LoginComponent.
+
+
+This results in Tight Coupling and our tests being very Brittle, i.e. likely to break easily. For example
+if the AuthService changed how it stored the token, from localStorage to cookies then the
+LoginComponent test would break since it would still be setting the token via localStorage.
+
+This is why we need to test classes in isolation, we just want to worry about LoginComponent and not about the myriad of other things LoginComponent depends on.
+
+We achieve this by Mocking our dependencies. Mocking is the act of creating something that looks like the dependency but is something we control in our test. There are a few methods we can use to create mocks
+
+
+
+
+
+
+
+
+import { Component } from '@angular/core';
+
+export class AuthService {
+  isAuthenticated(): boolean {
+    console.log('inside service', localStorage.getItem('token'), !!localStorage.getItem('token'));
+    return !!localStorage.getItem('token');
+  }
+}
+
+class MockAuthService {
+  authenticated = false;
+  isAuthenticated() {
+    return this.authenticated;
+  }
+}
+
+
+@Component({
+  selector: 'app-login',
+  template: `<a [hidden]="needsLogin()">Login</a>`
+})
+export class LoginComponent {
+
+  constructor(private auth: AuthService) {
+  }
+
+  needsLogin() {
+    return this.auth.isAuthenticated();
+  }
+}
+/////////// ******************** *///////////////////////////////////////////
+
+
+describe('Component: Login', () => {
+
+  let component: LoginComponent;
+  let service: MockAuthService;
+
+  beforeEach(() => {
+    service = new MockAuthService();
+    component = new LoginComponent(service);
+  });
+
+  afterEach(() => {
+    service = null;
+    component = null;
+  });
+
+
+  it('canLogin returns false when the user is not authenticated', () => {
+
+    expect(component.needsLogin()).toBeFalsy();
+  });
+  it('canLogin returns true when the user is  authenticated', () => {
+    service.authenticated = false;
+    expect(component.needsLogin()).toBeTruthy();
+  });
+});
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Mocking with builtin jasmine mocking apis:
+.........................................
+
+
+Mock by using a real instance with Spy:
+
+A Spy is a feature of Jasmine which lets you take an existing class, function, object and mock it in such a way that you can control what gets returned from functions
+
+Let’s re-write our test to use a Spy on a real instance of AuthService instead, like so:
+
+
+import { Component } from '@angular/core';
+
+export class AuthService {
+  isAuthenticated(): boolean {
+    console.log('inside service', localStorage.getItem('token'), !!localStorage.getItem('token'));
+    return !!localStorage.getItem('token');
+  }
+}
+
+@Component({
+  selector: 'app-login',
+  template: `<a [hidden]="needsLogin()">Login</a>`
+})
+export class LoginComponent {
+
+  constructor(private auth: AuthService) {
+  }
+
+  needsLogin() {
+    return this.auth.isAuthenticated();
+  }
+}
+/////////// ******************** *///////////////////////////////////////////
+
+
+describe('Component: Login', () => {
+
+  let component: LoginComponent;
+  let service: AuthService;
+  let spy: any;
+
+  beforeEach(() => {
+    service = new AuthService();
+    component = new LoginComponent(service);
+  });
+
+  afterEach(() => {
+    service = null;
+    component = null;
+    localStorage.removeItem('token');
+  });
+
+
+  it('canLogin returns false when the user is not authenticated', () => {
+    spy = spyOn(service, 'isAuthenticated').and.returnValue(false);
+    expect(component.needsLogin()).toBeFalsy();
+    expect(service.isAuthenticated).toHaveBeenCalled();
+  });
+  it('canLogin returns true when the user is  authenticated', () => {
+    spy = spyOn(service, 'isAuthenticated').and.returnValue(true);
+    expect(component.needsLogin()).toBeTruthy();
+    expect(service.isAuthenticated).toHaveBeenCalled();
+
+  });
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////
+Angular Test Bed
+................
+
+The Angular Test Bed (ATB) is a higher level Angular Only testing framework that allows us to easily test behaviours that depend on the Angular Framework.
+
+We still write our tests in Jasmine and run using Karma but we now have a slightly easier way to create components, handle injection, test asynchronous behaviour and interact with our
+application.
+
+Fixtures and DI:
+
+1.A fixture is a wrapper for a component and it’s template.
+
+2.We create an instance of a component fixture through the TestBed, this injects the   AuthService into the component constructor
+
+3.We can find the actual component from the componentInstance on the fixture.
+
+4.We can get resolve dependencies using the TestBed injector by using the get function
+
+
+When to use ATB
+We will continue to use ATB for the rest of this section because:
+• It allows us to test the interaction of a directive or component with it’s template.
+• It allows us to easily test change detection.
+• It allows us to test and use Angulars DI framework,
+• It allows us to test using the NgModule configuration we use in our application.
+• It allows us to test user interaction via clicks & input fields
+
+
+import { Component } from '@angular/core';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+
+export class AuthService {
+  isAuthenticated(): boolean {
+    console.log('inside service', localStorage.getItem('token'), !!localStorage.getItem('token'));
+    return !!localStorage.getItem('token');
+  }
+}
+@Component({
+  selector: 'app-login',
+  template: `<a [hidden]="needsLogin()">Login</a>`
+})
+export class LoginComponent {
+
+  constructor(private auth: AuthService) {
+  }
+
+  needsLogin() {
+    return this.auth.isAuthenticated();
+    // return true;
+  }
+}
+/////////// ******************** */////////////////////////////////////////////////////////
+
+describe('Component: Login', () => {
+
+  let component: LoginComponent;
+  let service: AuthService;
+  let fixture: ComponentFixture<LoginComponent>;
+  let spy: any;
+
+  beforeEach(() => {
+    // service = new AuthService();
+    // component = new LoginComponent(service);
+    TestBed.configureTestingModule({
+      declarations: [LoginComponent],
+      providers: [AuthService]
+    });
+    // create component and test fixture
+    fixture = TestBed.createComponent(LoginComponent);
+    // get test component from the fixture
+    component = fixture.componentInstance;
+    // UserService provided to the TestBed
+    service = TestBed.get(AuthService);
+  });
+
+  afterEach(() => {
+    service = null;
+    component = null;
+    localStorage.removeItem('token');
+  });
+
+
+  it('canLogin returns false when the user is not authenticated', () => {
+    spy = spyOn(service, 'isAuthenticated').and.returnValue(false);
+    expect(component.needsLogin()).toBeFalsy();
+    expect(service.isAuthenticated).toHaveBeenCalled();
+  });
+  it('canLogin returns true when the user is  authenticated', () => {
+    spy = spyOn(service, 'isAuthenticated').and.returnValue(true);
+    expect(component.needsLogin()).toBeTruthy();
+    expect(service.isAuthenticated).toHaveBeenCalled();
+  });
+});
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to Test DOM Elements:
+.........................
+
+DebugElement : The reference of DOM Element.
+By : It is used to select /find Dom element from
+
+
+import { Component, DebugElement } from '@angular/core';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
+export class AuthService {
+  isAuthenticated(): boolean {
+    console.log('inside service', localStorage.getItem('token'), !!localStorage.getItem('token'));
+    return !!localStorage.getItem('token');
+  }
+}
+@Component({
+  selector: 'app-login',
+  template: `<a>
+  <span *ngIf="needsLogin()">Login</span>
+  <span *ngIf="!needsLogin()">Logout</span>
+  </a>`
+})
+export class LoginComponent {
+
+  constructor(private auth: AuthService) {
+  }
+
+  needsLogin() {
+    return !this.auth.isAuthenticated();
+  }
+}
+/////////// ******************** *///////////////////////////////////////////
+
+
+describe('Component: Login', () => {
+
+  let component: LoginComponent;
+  let service: AuthService;
+  let fixture: ComponentFixture<LoginComponent>;
+  let spy: any;
+  let el: DebugElement;
+
+  beforeEach(() => {
+    // service = new AuthService();
+    // component = new LoginComponent(service);
+    TestBed.configureTestingModule({
+      declarations: [LoginComponent],
+      providers: [AuthService]
+    });
+    // create component and test fixture
+    fixture = TestBed.createComponent(LoginComponent);
+    // get test component from the fixture
+    component = fixture.componentInstance;
+    // UserService provided to the TestBed
+    service = TestBed.get(AuthService);
+
+    // get the "a" element by CSS selector (e.g., by class name)
+    el = fixture.debugElement.query(By.css('a'));
+  });
+
+  afterEach(() => {
+    service = null;
+    component = null;
+    localStorage.removeItem('token');
+  });
+
+
+  it('login button hidden when the user is authenticated', () => {
+    // To being with Angular has not done any change detection so the content is     blank.
+    expect(el.nativeElement.textContent.trim()).toBe('');
+    // Trigger change detection and this lets the template update to the initial value     which; is; Login; since; by;
+    // default we are not authenticated
+    fixture.detectChanges();
+    expect(el.nativeElement.textContent.trim()).toBe('Login');
+    // Change the authetication state to true
+    spyOn(service, 'isAuthenticated').and.returnValue(true);
+    // The label is still Login! We need changeDetection to run and for angular to     update; the; template.
+    expect(el.nativeElement.textContent.trim()).toBe('Login');
+    // Which we can trigger via fixture.detectChange()
+    fixture.detectChanges();
+    // Now the label is Logout
+    expect(el.nativeElement.textContent.trim()).toBe('Logout');
+  });
+
+});
+***********/////////////////////*************************************************************
+
+
+
+
+
+
+

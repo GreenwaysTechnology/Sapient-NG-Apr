@@ -1,0 +1,47 @@
+<h1>Pipe Application</h1>
+<hr>
+<h1>Date Pipe</h1>
+<h2>Today {{ today | date }}</h2>
+<h2>Today {{ today | date:'dd/MM/yyyy' }}</h2>
+<h2>Today {{ today | date:'shortTime' }}</h2>
+<h1>Currency Pipe</h1>
+<h2>Stock value {{stockPrice |currency}}</h2>
+<h2>Stock value {{stockPrice | currency:'INR'}}</h2>
+<h1>Object : JSON</h1>
+<pre>
+   {{formValues | json}}
+</pre>
+<h1>Percentage</h1>
+<h2>
+  Average Price {{avgPrice | percent}}
+</h2>
+<h1>String pipes</h1>
+<h2>
+  first Name : uppercase {{firstName | uppercase }}
+  first Name : lowercase {{firstName | lowercase }}
+  first Name : titlecase {{firstName | titlecase }}
+
+</h2>
+<h1>Observable pipes</h1>
+<h2>Stream Message {{stream | async}}</h2>
+<ul>
+  <li *ngFor="let num of datasource">
+    {{num}}
+  </li>
+</ul>
+<h2>For loop with async pipe</h2>
+<ul>
+  <li *ngFor="let num of list | async">
+    {{num}}
+  </li>
+</ul>
+
+<!-- <h2>Todos with async pipe</h2>
+<ul>
+  <li *ngFor="let todo of todos | async">
+    <pre>{{todo | json}}</pre>
+  </li>
+</ul> -->
+<h1>Custom Pipes : decimal fraction With Chanining</h1>
+<h2>Decimal Fraction {{ goldPrice | decimalFraction | currency }}</h2>
+<h2>Decimal Fraction {{ goldPrice | decimalFraction:3 | currency:'INR'}}</h2>
