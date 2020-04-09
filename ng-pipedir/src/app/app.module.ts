@@ -4,11 +4,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { DecimalFractionPipe } from './pipes/decimalfraction.pipe';
 import { HighLightDirective } from './driectives/app.highlight.directive';
+import { DelayDirective } from './driectives/app.delay.directive';
 
 
 @NgModule({
   declarations: [
-    AppComponent, DecimalFractionPipe, HighLightDirective
+    AppComponent, DelayDirective, DecimalFractionPipe, HighLightDirective
   ],
   imports: [
     BrowserModule,

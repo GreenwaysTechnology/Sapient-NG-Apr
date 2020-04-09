@@ -3410,6 +3410,269 @@ describe('Component: Login', () => {
 });
 ***********/////////////////////*************************************************************
 
+Routers and navigation:
+......................
+
+Single page Web application:
+
+It is one of the web app invented in 2007 as part of html 5 spec.
+
+Web app types
+
+1.static
+2.dynamic content generation web app
+3.resource web app
+4.spa
+
+every web application is going to accessed with special syntax urls
+
+url syntax
+1.static
+ http://www.example.com/customer.html / order.html icon.png
+
+2.dynamic content generation web app
+
+ http://www.example.com/login.jsp /login.do /login.aspx  login.php
+
+          client-----------request---server will run a program--->out put html file
+3.resource web app : Web Services
+   Resource means data --- 
+
+ http://www.example.com/api/customers
+ http://www.example.com/api/customers/1
+ http://www.example.com/api/customers?city='DEL'   --->out put data in format -json/xml
+
+4.spa : built for browers Executions
+  
+ http://www.example.com/index.html#customers/orders/produts
+   -hash bang notation
+ http://www.example.com/customers 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+How to build spa application?
+
+ HTML 5 
+ CSS 3
+ Javascript
+  The browser must support html 5 spec.
+
+if you want to build enterprise spa application, it is difficult to use plain javascript.
+so that we can use libs/frameworks.
+
+Angular 2 onwards spa features is in built.
+////////////////////////////////////////////////////////////////////////////////////////
+
+Spa features is offered inside angular as module 'routerModule'
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Lets code:
+
+1.routerModule
+
+Angular is having separate  router module : shared module.
+
+RouterModule:
+
+It is Module Object has two methods
+
+class RouterModule {
+  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>
+  static forChild(routes: Routes): ModuleWithProviders<RouterModule>
+}
+
+The Basics:
+
+1.html element : index.html
+
+ <base href="/">
+    This should be inside head element tells the router how to compose navigation urls
+   
+
+2.RouterModule,Routes
+  RouterModule is Module Object having all routers objects  
+  Routes : Type to define Route Configuration
+
+3.Router Configuration
+
+  Url Mapping with component
+  url -----Program
+  /api/customers  -----> app.get('/api/customers',func())
+
+Url mapping is done through an literal object
+
+ has two keys
+
+  path : 'url'
+
+url syntax:
+
+ 'foo' - static path
+ 'foo/:id' - parameterized path
+ '' ->root path
+ '**' : no path found
+const routes: Routes = [
+  { path: 'contactus', component: ContactUsComponent }
+];
+
+4.How to enable navigation
+
+navigation is enabled through hyperlinks : menus
+
+ Menus : hyerlinks :Add extra behaviour to exisiting a element
+ 
+ <a href="url">test</a>
+ <a routerLink="/contactus">ContactUs</a>
+      |
+   Directive : attribute 
+
+5.Place Holder
+  RouterOutlet
+
+
+6.Redirection
+ if you are going to find particular url , you can navigate to component
+
+ Benfits of redirections
+
+ 1.you can have many urls, can point to particular one component
+
+
+
+Componets
+import { Component } from '@angular/core';
+
+
+@Component({
+    selector: 'app-contactus',
+    template: `
+        <h1>Contact Us</h1>
+    `
+})
+export class ContactUsComponent {
+
+}
+
+import { Component } from '@angular/core';
+
+
+@Component({
+    selector: 'app-services',
+    template: `
+        <h1>Services</h1>
+    `
+})
+export class ServicesComponent {
+
+}
+
+
+
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { ContactUsComponent } from './routers/contactus.component';
+import { ServicesComponent } from './routers/services.component';
+
+//Configuration
+const routes: Routes = [
+  //root path
+  { path: '', component: ServicesComponent },
+  { path: 'customercare', redirectTo: '/services', pathMatch: 'full' },
+  { path: 'contactus', component: ContactUsComponent },
+  { path: 'services', component: ServicesComponent },
+  { path: '**', redirectTo: '/contactus', pathMatch: 'full' }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule] //make this as public
+})
+export class AppRoutingModule {
+
+}
+
+<h1>Angular Routing App</h1>
+<hr>
+<!--Navigation-->
+<a routerLink="/contactus">ContactUs</a> |
+<a routerLink="/services">Services</a>
+
+<hr>
+<!--PlaceHolder Component-->
+<router-outlet></router-outlet>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Router state:
+ After each successful navigation, the router builds a tree of "ActivatedRoute" Objects
+that make up the current state of the router.
+
+ActivateRoute:
+
+ It is object having route specific information, can be used to access those information
+inside component.
+
+if you want to access all route information inside component , ActivateRoute.
+
+This object is created already, when successufll navigation of routing.
+
+if you want to access, you have to dependency injection.
+
+
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+
+@Component({
+    selector: 'app-contactus',
+    template: `
+        <h1>Contact Us - {{title}}</h1>
+        <pre>
+            {{urlsec | json}}
+        </pre>
+    `
+})
+export class ContactUsComponent {
+    urlsec: any;
+    title: string;
+    constructor(private routerState: ActivatedRoute) { }
+    ngOnInit() {
+        //url
+        this.routerState.url.subscribe(urlinfo => {
+            urlinfo.forEach(urlseg => {
+                console.log(urlseg.path);
+                this.urlsec = urlseg
+            });
+        });
+        //data 
+        this.routerState.data.subscribe(info => {
+            console.log(info);
+            this.title = info.title
+        }
+
+        )
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
